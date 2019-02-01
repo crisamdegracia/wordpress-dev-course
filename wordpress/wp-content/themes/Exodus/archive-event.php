@@ -15,14 +15,7 @@
 
 
 <div class="container container--narrow page-section">
-
-
-
-  <?php 
-  
-  
-  
-  
+  <?php   
   while( have_posts() ) : the_post(); ?>
   <div class="event-summary">
      <a class="event-summary__date t-center" href="<?php the_permalink() ?>">

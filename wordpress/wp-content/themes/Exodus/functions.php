@@ -22,7 +22,7 @@ function university_features(){
 add_action('after_setup_theme' , 'university_features');
 
 
-function universty_adjust_queries($query){
+function university_adjust_queries($query){
 
   if( !is_admin() AND is_post_type_archive('event') AND $query-> is_main_query() ){
 
