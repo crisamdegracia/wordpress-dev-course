@@ -15,13 +15,15 @@
 
 
 <div class="container container--narrow page-section">
- <ul class="link-list min-list">
-  <?php   
+  <ul class="link-list min-list">
+    <?php   
   while( have_posts() ) : the_post(); ?>
 
-<?php the_content() ?>
-<li><a href="<?php the_permalink() ?>"><?php the_title() ?></a></li>
-  <?php endwhile; ?>
+    <li><a href="<?php the_permalink() ?>"><?php the_title() ?></a>
+      <?php the_content() ?>
+    
+    </li>
+    <?php endwhile; ?>
   </ul>
   <?php echo paginate_links() ?>
 </div>
