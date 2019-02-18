@@ -13,8 +13,6 @@
   </div>  
 </div>
 
-
-
 <div class="container container--narrow page-section">
   <div class="metabox metabox--position-up metabox--with-home-link">
     <p><a class="metabox__blog-home-link" href="<?php echo get_post_type_archive_link('program'); ?>"><i class="fa fa-home" aria-hidden="true"></i>All Programs</a> <span class="metabox__main"><?php the_title();?></span></p>
@@ -24,34 +22,61 @@
     <?php the_content(); ?>
   </div>
 
-  <?php  $today = date("Ymd");
+  <?php 
 
-  $homepageEvents = new WP_Query(array(
-    "posts_per_page"       => 2,
-    "post_type"            => 'event',
-    "meta_key"             => 'event_date',
-    "orderby"             => 'meta_value_num',
+
+  $relatedProfessors = new WP_Query(array(
+    "posts_per_page"       => -1,
+    "post_type"            => 'professor',
+    "orderby"            => 'title',
     "order"                => 'ASC',
-    "meta_query"           => array(
-      array(
-        'key'     => 'event_date',
-        'compare' => '>=',
-        'value'   => $today,
-        'type'    => 'numeric'
-      ),
-      array(
-        'key'     => 'related_programs',
-        'compare' => 'LIKE',
-        'value'   => '"' . get_the_ID() . '"'
-      ),
-      
-    )
-
   ));    
 
-  while( $homepageEvents->have_posts() ) :
+  if ( $relatedProfessors->have_posts() ) :
+  echo '<hr class="section-break">';
+  echo '<h2 class="headline headline--medium">' . get_the_title() . ' Professor(s) </h2>';
 
-  $homepageEvents->the_post(); ?>
+  while( $relatedProfessors->have_posts() ) :
+
+  $relatedProfessors->the_post(); ?>
+
+  <li><a href="<?php the_permalink(); ?>"> <?php the_title() ?></a></li>
+  
+  <?php endwhile;
+    endif; 
+    wp_reset_postdata();
+
+    $today = date('Ymd');
+
+    $homepageEvents = new WP_Query(array(
+      "posts_per_page"       => 2,
+      "post_type"            => 'event',
+      "meta_key"             => 'event_date',
+      "orderby"              => 'meta_value_num',
+      "order"                => 'ASC',
+      "meta_query"           => array(
+
+        array(
+          'key'     => 'related_programs',
+          'compare' => 'LIKE',
+          'value'   => '"'.get_the_ID().'"'
+        ),
+        array(
+          'key'     => 'event_date',
+          'compare' => '>=',
+          //        'value'   => $today,  NOT WORKING IF ALLOWED...
+          'type'    => 'numeric'
+        )
+      )
+    ));    
+
+    if ( $homepageEvents->have_posts() ) :
+    echo '<hr class="section-break">';
+    echo '<h2 class="headline headline--medium"> Upcoming ' . get_the_title() . ' Events </h2>';
+
+    while( $homepageEvents->have_posts() ) :
+
+    $homepageEvents->the_post(); ?>
 
   <div class="event-summary">
     <a class="event-summary__date t-center" href="<?php the_permalink() ?>">
@@ -72,12 +97,14 @@
     </div>
   </div>
 
-  <?php endwhile;?>
+  <?php endwhile;
+       endif;
+  ?>
 
 
 </div>
 
-<?php  endwhile; ?>
+<?php  endwhile;  ?>
 
 <?php get_footer() ?>
 
