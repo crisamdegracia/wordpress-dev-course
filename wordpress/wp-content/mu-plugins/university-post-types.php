@@ -2,6 +2,22 @@
 
 
 function university_post_types() {
+
+  //Campus Post-type
+  register_post_type('campus', array(
+    'supports'  => array('title','editor','excerpt'),
+    'rewrite'   => array( 'slug' => 'campuses'),
+    'has_archive' => true,
+    'public'      => true,
+    'labels'      => array(
+      'name'        => 'campuses',
+      'add_new_item' => 'Add New Campus',
+      'edit_item'    => 'Edit Campus',
+      'all_items'    => 'All Campuses'),
+    'menu_icon'   => 'dashicons-location-alt'
+
+  ));
+
   //Event post type
   register_post_type('event', array(
     'supports'  => array('title','editor','excerpt'),
@@ -44,6 +60,9 @@ function university_post_types() {
     'menu_icon'   => 'dashicons-welcome-learn-more'
 
   ));
+
+
+
 
 }
 
