@@ -50,8 +50,16 @@ class Search {
     this.previousValue = this.searchField.val();
   }
   getResults() {
-    this.resultsDiv.html('AWOOO');
-    this.isSpinnerVisible =  false;    
+  
+    $.getJSON('http://localhost/wp-json/wp/v2/posts?search='+ this.searchField.val(), posts => {
+      this.resultsDiv.html(`
+    <h2 class="search-overlay__section-title"> General Information </h2>
+    <ul class="link-list min-list">
+      <li><a href="${posts[0].link}"> ${posts[0].title.rendered} </a> </li>
+    </ul>
+
+`);
+    })
   }
   
   
