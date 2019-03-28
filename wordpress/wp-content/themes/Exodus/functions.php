@@ -1,5 +1,28 @@
 <?php 
 
+require get_theme_file_path('/inc/search-route.php');
+
+
+
+
+
+
+
+
+
+//we add custom field named authorName to our
+// advance custom field and we can use it anywhere
+function university_custom_rest(){
+  
+  register_rest_field('post', 'authorName', array(
+  
+    'get_callback'  => function(){ return get_the_author(); }
+   ));
+}
+
+add_action('rest_api_init', 'university_custom_rest');
+
+
 //Dynamic function for pages 
 function pageBanner($args = NULL) {
   if( !$args['title'] ) {

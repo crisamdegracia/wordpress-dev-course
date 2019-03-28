@@ -67,13 +67,13 @@ class Search {
       $.getJSON(universityData.root_url + '/wp-json/wp/v2/pages?search='+ this.searchField.val())
 
       //when all JSON request are complete it will run
-      //a anomous function using ES6 
-      // every request from when will match the pagkasunod sunod ng
+      //anonymous function using ES6 
+      // every request from when() will match the pagkasunod sunod ng
       // parameter ex.  when(a,b,c) is then(a,b,c)
       //using posts and pages we can output request from JSON
     ).then((posts, pages) => {
       // we combined 2 array by using concat()
-      // posts[0] - is becoz we only use the many array information
+      // posts[0] - is becoz we only use the first item in many array information
       // giving the when() and then() method
       // we only use the first array of information
       //the first item is the first JSON data
@@ -83,8 +83,12 @@ class Search {
       //outputing on the HTML
       this.resultsDiv.html(`
 <h2 class="search-overlay__section-title"> General Information </h2>
+
 ${combinedResults.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
-${combinedResults.map( item => `<li><a href="${item.link}">  ${item.title.rendered} </a></li>` ).join('')}
+
+${combinedResults.map( item => `<li><a href="${item.link}">  ${item.title.rendered} </a> ${ item.type == 'post' ? `by ${item.authorName}`: ``  }  </li>` ).join('')}
+
+
 ${combinedResults.length ? '</ul>' : '' }
 
 `)
