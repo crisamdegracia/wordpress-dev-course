@@ -3,21 +3,22 @@
 require get_theme_file_path('/inc/search-route.php');
 
 
-
-
-
-
-
-
-
 //we add custom field named authorName to our
 // advance custom field and we can use it anywhere
 function university_custom_rest(){
   
+  //1st arg the post-type we want to customize
+  //2nd arg what we wanna name
+  //3rd an array that describes how we want to manage this field
   register_rest_field('post', 'authorName', array(
-  
+    
+    //what ever the value will store on the name authorName
     'get_callback'  => function(){ return get_the_author(); }
    ));
+  
+  //we can create as many property as we want
+  // register_rest_field(arg1, arg2, arg3)
+  // and return it as PHP script
 }
 
 add_action('rest_api_init', 'university_custom_rest');
@@ -59,12 +60,13 @@ function wp_theme_styles(){
 
 
   wp_enqueue_style( 'custom-google-fonts', 'https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
+  
   wp_enqueue_style( 'font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+  
   wp_enqueue_style( 'main-style', get_stylesheet_uri(), NULL, microtime() );
 
-
-  
   wp_enqueue_script('main-university-js', get_template_directory_uri() . '/test.js');
+  
   wp_localize_script('main-university-js', 'universityData',
                      array( 'root_url' => get_site_url() ) );
 

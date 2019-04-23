@@ -54,48 +54,82 @@ class Search {
 
 
   getResults() {
-    // Asynchronous style JS -- 
-    //on  when() we can use many JSON request as we want
-    //and it will all run asynchronous 
-    $.when(
-      // 1st argument -- can have many argument 
-      //normaly we pass two  argment LOCATION and FUNCTION on JSON but
-      // on when() method its okay to be one. coz we use then()
-      $.getJSON(universityData.root_url + '/wp-json/wp/v2/posts?search='+ this.searchField.val()),
 
-      // 2nd argument  
-      $.getJSON(universityData.root_url + '/wp-json/wp/v2/pages?search='+ this.searchField.val())
+    $.getJSON(universityData.root_url + '/wp-json/university/v1/search?term='+ this.searchField.val(), (results) => {
 
-      //when all JSON request are complete it will run
-      //anonymous function using ES6 
-      // every request from when() will match the pagkasunod sunod ng
-      // parameter ex.  when(a,b,c) is then(a,b,c)
-      //using posts and pages we can output request from JSON
-    ).then((posts, pages) => {
-      // we combined 2 array by using concat()
-      // posts[0] - is becoz we only use the first item in many array information
-      // giving the when() and then() method
-      // we only use the first array of information
-      //the first item is the first JSON data
-      //2nd is whether it fail or succeded
-      var combinedResults = posts[0].concat(pages[0]);
 
-      //outputing on the HTML
+      // results is from getJSON 2nd parameter (ex: ${results.generalInfo.length ?) 
+      // its value is from 1st parameter of getJSON [location]
+      // results.generalInfo - I mean generalInfo is from the API we create on inc/search-route.js 
+      // item.link before now on our new API we will use item.permalink and item.title
+      //its because its the structure of our newly created API 
       this.resultsDiv.html(`
+<div class="row">
+<div class="one-third">
 <h2 class="search-overlay__section-title"> General Information </h2>
+${results.generalInfo.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
 
-${combinedResults.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
+${results.generalInfo.map( item => `<li><a href="${item.permalink}">  ${item.title} </a>
+${ item.postType == 'post' ? `by ${item.authorName}`: ``  }  </li>` ).join('')}
 
-${combinedResults.map( item => `<li><a href="${item.link}">  ${item.title.rendered} </a> ${ item.type == 'post' ? `by ${item.authorName}`: ``  }  </li>` ).join('')}
+${results.generalInfo.length ? '</ul>' : '' }
 
 
-${combinedResults.length ? '</ul>' : '' }
+</div>
+<div class="one-third">
+<h2 class="search-overlay__section-title"> Programs </h2>        
+${results.programs.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
+
+${results.programs.map( item => `<li><a href="${item.permalink}">  ${item.title} </a> `).join('')}
+
+${results.programs.length ? '</ul>' : '' }
+
+
+
+<h2 class="search-overlay__section-title"> Professors </h2>
+${results.professors.length ? '<ul class="link-list min-list">' : `<p>View  </p> <a href="${universityData.root_url}/programs"> all Professors </a> `}
+
+${results.professors.map( item => `<li><a href="${item.permalink}">  ${item.title} </a>` ).join('')}
+
+${results.professors.length ? '</ul>' : `` }
+
+
+
+
+
+</div>
+<div class="one-third">
+<h2 class="search-overlay__section-title"> Campuses </h2>
+
+
+${results.professors.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
+
+${results.professors.map( item => `<li><a href="${item.permalink}">  ${item.title} </a>
+${ item.postType == 'post' ? `by ${item.authorName}`: ``  }  </li>` ).join('')}
+
+${results.professors.length ? '</ul>' : '' }
+
+
+
+<h2 class="search-overlay__section-title"> Events </h2>
+
+
+${results.professors.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
+
+${results.professors.map( item => `<li><a href="${item.permalink}">  ${item.title} </a>
+${ item.postType == 'post' ? `by ${item.authorName}`: ``  }  </li>` ).join('')}
+
+${results.professors.length ? '</ul>' : '' }
+
+
+</div>
+</div>
+
 
 `)
-    }, () => {
-      this.resultsDiv.html('<p> Unexpected Error. Please try again! </p>')
-    });
-    this.isSpinnerVisible = false;
+
+    } ); this.isSpinnerVisible = false;
+
   }
 
 
