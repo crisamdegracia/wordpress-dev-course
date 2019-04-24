@@ -13,13 +13,14 @@ pageBanner();
   </div>
 
   <div class="generic-content">
-    <?php the_content(); ?>
+    <?php the_field('main_body_content'); ?>
   </div>
 
   <?php 
 
 
   $relatedProfessors = new WP_Query(array(
+    //-1 meaning will show all 
     "posts_per_page"       => -1,
     "post_type"            => 'professor',
     "orderby"            => 'title',

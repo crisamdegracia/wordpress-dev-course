@@ -78,7 +78,7 @@ ${results.generalInfo.length ? '</ul>' : '' }
 </div>
 <div class="one-third">
 <h2 class="search-overlay__section-title"> Programs </h2>        
-${results.programs.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
+${results.programs.length ? '<ul class="link-list min-list">' : `<p>Nothing found View   <a href="${universityData.root_url}/programs"> all Programs  </a> instead</p>`}
 
 ${results.programs.map( item => `<li><a href="${item.permalink}">  ${item.title} </a> `).join('')}
 
@@ -86,40 +86,61 @@ ${results.programs.length ? '</ul>' : '' }
 
 
 
-<h2 class="search-overlay__section-title"> Professors </h2>
-${results.professors.length ? '<ul class="link-list min-list">' : `<p>View  </p> <a href="${universityData.root_url}/programs"> all Professors </a> `}
 
-${results.professors.map( item => `<li><a href="${item.permalink}">  ${item.title} </a>` ).join('')}
+<h2 class="search-overlay__section-title"> Professors </h2>
+${results.professors.length ? '<ul class="professor-cards">' : `<p>Nothing found. </p> `}
+
+${results.professors.map( item => `
+
+<li class="professor-card__list-item">
+<a class="professor-card" href=" ${item.permalink} "> 
+<img class="professor-card__image " src="${item.image}" alt="">
+<span class="professor-card__name">${item.title}</span>
+</a>
+</li>
+
+` ).join('')}
 
 ${results.professors.length ? '</ul>' : `` }
-
-
-
 
 
 </div>
 <div class="one-third">
 <h2 class="search-overlay__section-title"> Campuses </h2>
 
+${results.campuses.length ? '<ul class="link-list min-list">' : `<p>Nothing found view   <a href="${universityData.root_url}/campuses"> all Campuses </a> instead</p> `}
 
-${results.professors.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
+${results.campuses.map( item => `<li><a href="${item.permalink}">  ${item.title} </a>` ).join('')}
 
-${results.professors.map( item => `<li><a href="${item.permalink}">  ${item.title} </a>
-${ item.postType == 'post' ? `by ${item.authorName}`: ``  }  </li>` ).join('')}
+${results.campuses.length ? '</ul>' : `` }
 
-${results.professors.length ? '</ul>' : '' }
 
 
 
 <h2 class="search-overlay__section-title"> Events </h2>
 
 
-${results.professors.length ? '<ul class="link-list min-list">' : '<p> No results found </p>'}
+${results.events.length ? '<ul class="link-list min-list">' : `<p>Nothing found view   <a href="${universityData.root_url}/events"> all Events </a> instead</p> `}
 
-${results.professors.map( item => `<li><a href="${item.permalink}">  ${item.title} </a>
-${ item.postType == 'post' ? `by ${item.authorName}`: ``  }  </li>` ).join('')}
+${results.events.map( item => `
 
-${results.professors.length ? '</ul>' : '' }
+<div class="event-summary">
+<a class="event-summary__date t-center" href="${item.permalink}">
+<span class="event-summary__month">
+${item.month}
+</span>
+<span class="event-summary__day">${item.day}</span>  
+</a>
+<div class="event-summary__content">
+<h5 class="event-summary__title headline headline--tiny"><a href="${item.permalink}">${item.title}</a></h5>
+<p> ${ item.desc } 
+
+<a href="${item.permalink}" class="nu gray">Learn more</a></p>
+</div>
+</div>
+
+`).join('')}
+
 
 
 </div>

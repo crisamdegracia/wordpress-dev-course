@@ -10,7 +10,7 @@ pageBanner(array(
     while( have_posts() ) : the_post(); ?>
 
     <li><a href="<?php the_permalink() ?>"><?php the_title() ?></a>
-      <?php the_content() ?>
+      <?php the_field('main_body_content') ?>
 
     </li>
     <?php endwhile; ?>
