@@ -37,7 +37,7 @@ function universitySearchResults($data){
   // 's' means search 
   //we created $data for us to use within the body of the function
 
-  $mainQuery = new WP_Query(array(
+  $mainQuery = new WP_Query(  array(
     'post_type'   =>  array('post','page','professor', 'program','campus','event'),
     's'           =>  sanitize_text_field( $data['term'] )
   ));
@@ -51,7 +51,7 @@ function universitySearchResults($data){
   );
 
 
-  while($mainQuery->have_posts()){
+  while(  $mainQuery->have_posts()  ){
 
     $mainQuery->the_post();
 
@@ -88,7 +88,32 @@ function universitySearchResults($data){
 
       ));
 
-    }    if(get_post_type() == 'program') {
+    }   
+
+
+    //PROGRAMS QUERY
+    if( get_post_type() == 'program' ) {
+
+      //we get the ACF value
+      $relatedCampus  = get_field( 'related_campus' );
+
+      
+      //if campuses is not emty then
+      if( $relatedCampus ) {
+
+        foreach( $relatedCampus as $campus ) {
+
+          //put an array to results['campuses']
+          array_push ( $results['campuses'] , array(
+            
+            //get_the_title( $campus ) - is to make sure that we get the CURRENT RELATED query for campus
+            'title'   => get_the_title( $campus ),
+            'permalink'   => get_the_permalink( $campus )
+
+          )); 
+        }    
+      }
+
 
       //1st arg the array we want to add on to
       //2nd arg what we want to add to the array
@@ -103,8 +128,7 @@ function universitySearchResults($data){
     }   
 
     //EVENTS ROUTE
-
-    if(get_post_type() == 'event') {
+    if( get_post_type() == 'event' ) {
       $eventDate = new DateTime( get_field('event_date'));
       $desc      = null;
 
@@ -112,7 +136,7 @@ function universitySearchResults($data){
 
         $desc = get_the_excerpt();
       } else { 
-        $desc = wp_trim_words(get_the_content(), 18 );
+        $desc = wp_trim_words(  get_the_content(), 18 );
       }
 
       //1st arg the array we want to add on to
@@ -130,8 +154,7 @@ function universitySearchResults($data){
     }  
 
     // CAMPUSES ROUTE
-
-    if(get_post_type() == 'campus') {
+    if( get_post_type() == 'campus') {
 
       //1st arg the array we want to add on to
       //2nd arg what we want to add to the array
@@ -148,17 +171,22 @@ function universitySearchResults($data){
     }
 
 
-  }
+  } // while
 
-  
+
+
+  // This outputs only on the search overlay for Programs
   // this if condition purpose is when we put relative words to programs like Math then on also english
   // kapag naglagay tayo ng words like english on math programs, hind sila mag hahalo halo-
   // if condition is to check that we only output them a programs, not contents, alias,  blah blah
-  if($results['programs']){
+  if( $results['programs'] ){
 
 
     $programsMetaQuery = array( 'relation' => 'OR' );
 
+
+    //collects all the related or similar query from programs
+    //then insert all to $programsMetaQuery
     foreach ( $results['programs'] as $item ) {
 
       // a function that adds item to an existing array
@@ -167,6 +195,10 @@ function universitySearchResults($data){
       // on the 2nd arg.
       array_push( $programsMetaQuery,  array(
 
+
+        //we are calling ACF related programs
+        //and filter whatever the users query
+        //if its for programs then we shudnt read and output not other than the title
         'key' => 'related_programs',
         'compare' => 'LIKE',
         // we create id for programs -- now we are calling it
@@ -177,15 +209,14 @@ function universitySearchResults($data){
 
     // We will check if the programs are duplicated
     //
-    $programRelationshipQuery = new WP_Query(array(
+    $programRelationshipQuery = new WP_Query( array(
 
-      'post_type'     => array['professor','event', 'campus']
+      'post_type'     => array('professor','event','campus'),
 
       //this is how we search based on the value of the custom field
-      // Multiple meta_query is like looking for different programs like (green programs, hospital program and so on)
+      // Multiple meta_query is like looking for different programs like green programs, hospital program and so on
       'meta_query'    =>  $programsMetaQuery
-    )//meta_query
-                                            ); 
+    ));
 
 
     //Program Relationship Query
@@ -193,34 +224,69 @@ function universitySearchResults($data){
 
       $programRelationshipQuery->the_post();
 
+
+      //here we will check all the data we got from user
+      // and filter it and look for professors queries
       if( get_post_type() == 'professor') {
 
         //1st arg the array we want to add on to
         //2nd arg what we want to add to the array
-        //push
+        //push 
         array_push(  $results['professors'],  array ( 
 
           'title'     => get_the_title(),
           'permalink' => get_the_permalink(),
-          
+
           //get_the_post_thumbnail_url(arg1) = 0 means current post
           // arg2 [size] = professorLandscape
           'image'       => get_the_post_thumbnail_url(0, 'professorLandscape')
         ));
 
-      } 
-    }
+      }//professor
+
+
+
+      if( get_post_type() == 'event') {
+        $eventDate = new DateTime( get_field('event_date'));
+        $desc      = null;
+
+        if ( has_excerpt() ) {
+
+          $desc = get_the_excerpt();
+        } else { 
+          $desc = wp_trim_words(  get_the_content(), 18 );
+        }
+
+        //1st arg the array we want to add on to
+        //2nd arg what we want to add to the array
+        //push
+        array_push(  $results['events'],  array ( 
+
+          'title'     => get_the_title(),
+          'permalink' => get_the_permalink(),
+          'month'     => $eventDate->format('M'),
+          'day'       => $eventDate->format('d'),
+          'desc'      => $desc
+        ));
+
+      } //Event 
+
+
+    }//while
 
     //Remove duplicates
     // array_unique arg[1] - the array we want to work with
     // array_unique arg[2] - assiociative array, so we can see if its duplicate or not
-    // by using array_unique alone -- the array will give us numerical item
-    // array_values removes the numerical item
-    $results['professors'] = array_values( array_unique($results['professors'], SORT_REGULAR ) );
+    // by using array_unique alone -- the array will give us numerical item number
+    // array_values removes the numerical item number
+    $results['professors']  = array_values( array_unique(  $results['professors'], SORT_REGULAR ) );
+    $results['events']      = array_values( array_unique(  $results['events'], SORT_REGULAR ) );
 
 
 
-  }
+  } // if ($result['programs]) 
+
+
   //then we will return the results here
   return $results;
 
